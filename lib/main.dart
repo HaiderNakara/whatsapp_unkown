@@ -1,11 +1,10 @@
 import 'dart:async';
-
+import 'dart:io';
 import 'package:clipboard/clipboard.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-
 import 'components/default_button.dart';
 
 void main() {
@@ -68,26 +67,30 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _intentDataStreamSubscription =
-        ReceiveSharingIntent.getTextStream().listen((String value) {
-      setState(() {
-        number.text = clean(value);
-      });
-    }, onError: (err) {
-      print("getLinkStream error: $err");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Something went wrong"),
-        ),
-      );
-    });
-    ReceiveSharingIntent.getInitialText().then((String? value) {
-      setState(() {
-        if (value != null) {
+    // check if the platform is android
+    if (kIsWeb) {
+    } else if (Platform.isAndroid) {
+      _intentDataStreamSubscription =
+          ReceiveSharingIntent.getTextStream().listen((String value) {
+        setState(() {
           number.text = clean(value);
-        }
+        });
+      }, onError: (err) {
+        print("getLinkStream error: $err");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Something went wrong"),
+          ),
+        );
       });
-    });
+      ReceiveSharingIntent.getInitialText().then((String? value) {
+        setState(() {
+          if (value != null) {
+            number.text = clean(value);
+          }
+        });
+      });
+    }
     number.addListener(() {
       setState(() {});
     });
