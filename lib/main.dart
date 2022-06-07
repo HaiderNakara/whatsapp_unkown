@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -43,19 +44,39 @@ class _MyHomePageState extends State<MyHomePage> {
   StreamSubscription? _intentDataStreamSubscription;
   String? _sharedText;
 
+  clean(String number) {
+    try {
+      if (number.contains(RegExp(r'[a-zA-Z]'))) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Invalid Number")));
+        return "";
+      }
+      if (number.startsWith("+91")) {
+        number = number.replaceFirst("+91", "");
+        number = number.replaceAll(RegExp(r'[^\d]'), '');
+        return number;
+      }
+      number = number.replaceAll(RegExp(r'[^\d]'), '');
+      return number;
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Invalid Number")));
+      return "";
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _intentDataStreamSubscription =
         ReceiveSharingIntent.getTextStream().listen((String value) {
-      print(value);
       setState(() {
-        number.text = value;
+        number.text = clean(value);
       });
     }, onError: (err) {
       print("getLinkStream error: $err");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Something went wrong"),
         ),
       );
@@ -63,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ReceiveSharingIntent.getInitialText().then((String? value) {
       setState(() {
         if (value != null) {
-          number.text = value;
+          number.text = clean(value);
         }
       });
     });
@@ -84,7 +105,22 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.paste),
+            onPressed: () {
+              FlutterClipboard.paste().then((String? value) {
+                if (value != null) {
+                  setState(() {
+                    number.text = clean(value);
+                  });
+                }
+              });
+            },
+          ),
+        ],
+      ),
       body: ListView(
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
