@@ -37,11 +37,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 TextEditingController number = TextEditingController();
+TextEditingController message = TextEditingController();
 TextEditingController numberCode = TextEditingController(text: "+91");
+bool isMessaging = false;
 
 class _MyHomePageState extends State<MyHomePage> {
   StreamSubscription? _intentDataStreamSubscription;
   String? _sharedText;
+  longPress() {
+    setState(() {
+      isMessaging = !isMessaging;
+    });
+  }
 
   clean(String number) {
     try {
@@ -110,6 +117,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          // if (isMessaging)
+          //   IconButton(
+          //     icon: const Icon(
+          //       Icons.message,
+          //       color: Colors.white,
+          //     ),
+          //     onPressed: () {
+          //       setState(() {
+          //         isMessaging = !isMessaging;
+          //       });
+          //     },
+          //   ),
           IconButton(
             icon: const Icon(Icons.paste),
             onPressed: () {
@@ -133,15 +152,21 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.only(left: 16.0, top: 70.0, right: 16.0),
-                  child: Text(
-                    "Enter the phone number",
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 16.0, top: 70.0, right: 16.0),
+                  child: GestureDetector(
+                    onLongPress: longPress,
+                    child: Text(
+                      !isMessaging
+                          ? "Enter the phone number"
+                          : "Enter the phone number and message",
+                      style: const TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
                 const Padding(
@@ -151,56 +176,90 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: 120.0,
                   ),
                 ),
-                Row(
-                  children: <Widget>[
-                    Flexible(
-                      child: Container(),
-                      flex: 1,
-                    ),
-                    Flexible(
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        controller: numberCode,
-                        style: const TextStyle(
-                          fontSize: 20.0,
-                        ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: <Widget>[
+                      Flexible(
+                        child: Container(),
+                        flex: 1,
                       ),
-                      flex: 3,
-                    ),
-                    Flexible(
-                      child: Container(),
-                      flex: 1,
-                    ),
-                    Flexible(
-                      child: TextFormField(
-                        decoration: const InputDecoration(hintText: "Number"),
-                        controller: number,
-                        textAlign: TextAlign.start,
-                        autofocus: false,
-                        enabled: true,
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.done,
-                        style: const TextStyle(
-                          fontSize: 20.0,
+                      Flexible(
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          controller: numberCode,
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                          ),
                         ),
+                        flex: 3,
                       ),
-                      flex: 9,
-                    ),
-                    Flexible(
-                      child: Container(),
-                      flex: 1,
-                    ),
-                  ],
+                      Flexible(
+                        child: Container(),
+                        flex: 1,
+                      ),
+                      Flexible(
+                        child: TextFormField(
+                          decoration: const InputDecoration(hintText: "Number"),
+                          controller: number,
+                          textAlign: TextAlign.start,
+                          autofocus: false,
+                          enabled: true,
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.done,
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        flex: 9,
+                      ),
+                      Flexible(
+                        child: Container(),
+                        flex: 1,
+                      ),
+                    ],
+                  ),
                 ),
+                if (isMessaging)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 20.0, left: 40.0, right: 40.0),
+                    child: TextFormField(
+                      controller: message,
+                      decoration: const InputDecoration(
+                        hintText: "Message",
+                      ),
+                      maxLines: 3,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.newline,
+                      style: const TextStyle(
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ),
                 Padding(
                   padding: const EdgeInsets.all(40.0),
                   child: DefaulfButton(
+                    longPress:
+                        number.text.length == 10 && numberCode.text.isNotEmpty
+                            ? () => {
+                                  setState(() {
+                                    isMessaging = !isMessaging;
+                                  }),
+                                }
+                            : null,
                     press:
                         number.text.length == 10 && numberCode.text.isNotEmpty
                             ? () async {
-                                if (!await launch('https://wa.me/' +
-                                    numberCode.text +
-                                    number.text)) {
+                                if (!await launch(!isMessaging
+                                    ? 'https://wa.me/' +
+                                        numberCode.text +
+                                        number.text
+                                    : 'https://wa.me/' +
+                                        numberCode.text +
+                                        number.text +
+                                        '?text=' +
+                                        Uri.encodeComponent(message.text))) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       duration: Duration(seconds: 1),
@@ -210,7 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 }
                               }
                             : null,
-                    text: "Open",
+                    text: !isMessaging ? "Open" : "Message",
                   ),
                 ),
               ])

@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 class DefaulfButton extends StatelessWidget {
   const DefaulfButton({
     Key? key,
-    this.text,
-    this.press,
+    required this.text,
+    required this.press,
+    required this.longPress,
   }) : super(key: key);
-  final String? text;
-  final Function? press;
-
+  final String text;
+  final press;
+  final longPress;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -20,9 +21,10 @@ class DefaulfButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
         ),
-        onPressed: press as void Function()?,
+        onPressed: press,
+        onLongPress: longPress,
         child: Text(
-          text!,
+          text,
         ),
       ),
     );

@@ -49,6 +49,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
   flutter_launcher_icons: ^0.9.3
+  icons_launcher: ^2.0.2
 # flutter_native_splash:
 #   color: "#FFFFFF"
 #   color_dark: "#000000"
@@ -56,10 +57,15 @@ dev_dependencies:
 #   image_dark: assets/splash.png
 # image_dark: "assets/dark_splash2.png"
 #background_image: "assets/background.png"
-flutter_icons:
-  android: "launcher_icon"
-  image_path: "assets/icon/icon.png"
-  web: true
+icons_launcher:
+  image_path: "assets/whatsapp.png"
+  platforms:
+    android:
+      enable: true
+# flutter_icons:
+#   android: "launcher_icon"
+#   image_path: "assets/icon/icon.png"
+  # web: true
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
