@@ -43,7 +43,6 @@ bool isMessaging = false;
 
 class _MyHomePageState extends State<MyHomePage> {
   StreamSubscription? _intentDataStreamSubscription;
-  String? _sharedText;
   longPress() {
     setState(() {
       isMessaging = !isMessaging;

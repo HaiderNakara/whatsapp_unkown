@@ -50,14 +50,15 @@ dev_dependencies:
   flutter_lints: ^1.0.0
   flutter_launcher_icons: ^0.9.3
   icons_launcher: ^2.0.2
+  flutter_native_splash: ^2.2.7
 flutter_native_splash:
     android: false
     ios: false
     web: true
-    color: "#FFFFFF"
-    color_dark: "#000000"
-    image: assets/whatsapp.png
-    image_dark: assets/whatsapp.png
+    image_web: assets/whatsapp.png
+    # image_dark_web: assets/whatsapp_dark.png
+    # image: assets/whatsapp.png
+    # image_dark: assets/whatsapp_dark.png
 # image_dark: "assets/dark_splash2.png"
 #background_image: "assets/background.png"
 # icons_launcher:
